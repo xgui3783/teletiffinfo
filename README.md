@@ -13,7 +13,8 @@ For large TIFF files, it is often not feasible to download the full TIFF file in
 ## Usage
 
 ```python
-
+from teletiffinfo import try_tiff
+try_tiff('https://file-examples-com.github.io/uploads/2017/10/file_example_TIFF_10MB.tiff') # returns (1950, 1301)
 ```
 
 ## License
