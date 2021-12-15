@@ -1,10 +1,11 @@
 import requests
-def probe(url:str, range=(0, 200)):
-    headers = {
+def probe(url:str, range=(0, 200), headers=None):
+    _headers = {
+        **({} if headers is None else headers),
         "Range": f"bytes={'-'.join(str(r) for r in range)}"
     }
     
-    resp = requests.get(url,headers=headers)
+    resp = requests.get(url, headers=_headers)
     if resp.status_code >= 400:
         raise RuntimeError(f"probe error: {str(resp.status_code)}")
     no_byte_requested = range[1] - range[0] + 1

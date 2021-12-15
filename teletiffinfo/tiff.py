@@ -47,11 +47,11 @@ def read_single_entry(buf: bytes, offset: int, endianness: EnumEndian):
         read_buf(buf, offset+8, EnumFieldType.LONG, endianness),
     )
 
-def read_dir(url: str, offset: int, endianess: EnumEndian) -> Tuple[int, int]:
-    raw = probe(url, (offset, offset + 2))
+def read_dir(url: str, offset: int, endianess: EnumEndian, headers=None) -> Tuple[int, int]:
+    raw = probe(url, (offset, offset + 2), headers=headers)
     no_fields = read_buf(raw, 0, EnumFieldType.SHORT, endianess)
 
-    raw_dir = probe(url, (offset + 2, offset + 2 + no_fields * 12 + 2))
+    raw_dir = probe(url, (offset + 2, offset + 2 + no_fields * 12 + 2), headers=headers)
     dirs = [read_single_entry(raw_dir, idx * 12, endianess) for idx in range(no_fields)]
     width_dir = [dir for dir in dirs if dir[0] == 256]
     height_dir = [dir for dir in dirs if dir[0] == 257]
@@ -61,8 +61,8 @@ def read_dir(url: str, offset: int, endianess: EnumEndian) -> Tuple[int, int]:
         raise RuntimeError(f"height metadata does not exist")
     return (width_dir[0][3], height_dir[0][3])
 
-def get_tiff_header(url: str) -> Tuple[EnumEndian, int]:
-    raw = probe(url, (0,7))
+def get_tiff_header(url: str, headers=None) -> Tuple[EnumEndian, int]:
+    raw = probe(url, (0,7), headers=headers)
     
     byte_order_bytes = raw[:2].decode('utf-8')
     assert byte_order_bytes == 'II' or byte_order_bytes == 'MM'
@@ -79,6 +79,6 @@ def get_tiff_header(url: str) -> Tuple[EnumEndian, int]:
     return (byte_order, first_dir)
 
 
-def try_tiff(url) -> Tuple[int, int]:
-    byte_order, first_dir = get_tiff_header(url)
-    return read_dir(url, first_dir, byte_order)
+def try_tiff(url, headers=None) -> Tuple[int, int]:
+    byte_order, first_dir = get_tiff_header(url, headers=headers)
+    return read_dir(url, first_dir, byte_order, headers=headers)

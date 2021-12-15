@@ -8,7 +8,7 @@ with open(os.path.join(ROOT_DIR, "README.md"), "r", encoding="utf-8") as f:
 
 setup(
     name="teletiffinfo",
-    version="0.0.2",
+    version="0.0.3",
     author="Xiao Gui",
     author_email="xgui3783@gmail.com",
     description="Fetch metadata from remote (https) tiff.",

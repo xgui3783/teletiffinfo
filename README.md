@@ -21,7 +21,15 @@ pip install teletiffinfo
 
 ```python
 from teletiffinfo import try_tiff
-try_tiff('https://file-examples-com.github.io/uploads/2017/10/file_example_TIFF_10MB.tiff') # returns (1950, 1301)
+try_tiff("https://file-examples-com.github.io/uploads/2017/10/file_example_TIFF_10MB.tiff") # returns (1950, 1301)
+```
+
+One could also add any custom header
+```python
+from teletiffinfo import try_tiff
+try_tiff("https://my.example.com/protected_tiff.tiff", {
+    "Authorization": "Bearer ey..."
+})
 ```
 
 ## License
