@@ -1,7 +1,14 @@
+from dataclasses import dataclass
 from typing import Tuple
 from enum import Enum
 
 from .util import probe
+
+@dataclass
+class TiffInfo:
+    width: int
+    height: int
+    channels: int
 
 class EnumEndian(Enum):
     LITTLE_ENDIAN=0
@@ -55,11 +62,19 @@ def read_dir(url: str, offset: int, endianess: EnumEndian, headers=None) -> Tupl
     dirs = [read_single_entry(raw_dir, idx * 12, endianess) for idx in range(no_fields)]
     width_dir = [dir for dir in dirs if dir[0] == 256]
     height_dir = [dir for dir in dirs if dir[0] == 257]
+    samples_per_pixel_dir = [dir for dir in dirs if dir[0] == 277]
+
     if len(width_dir) == 0:
-        raise RuntimeError(f"width metadata does not exist")
+        raise RuntimeError(f"width metadata does not exist header")
     if len(height_dir) == 0:
-        raise RuntimeError(f"height metadata does not exist")
-    return (width_dir[0][3], height_dir[0][3])
+        raise RuntimeError(f"height metadata does not exist in header")
+    if len(samples_per_pixel_dir) == 0:
+        raise RuntimeError(f"samples per pixel does not exist in header")
+    return TiffInfo(
+        width=width_dir[0][3],
+        height=height_dir[0][3],
+        channels=samples_per_pixel_dir[0][3],
+    )
 
 def get_tiff_header(url: str, headers=None) -> Tuple[EnumEndian, int]:
     raw = probe(url, (0,7), headers=headers)
