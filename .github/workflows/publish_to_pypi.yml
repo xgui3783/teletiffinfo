@@ -18,11 +18,10 @@ jobs:
         python-version: '3.x'
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade build twine
+        python -m pip install --user --upgrade twine setuptools wheel
     - name: Build the package
       run: |
-        python -m build
+        python setup.py sdist bdist_wheel
         python -m twine check dist/*
     - name: Publish a Python distribution to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
